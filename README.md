@@ -1,16 +1,14 @@
-# myjournal
+# Weight Tracker
+A simple weight-tracker.
 
-A new Flutter project.
+## Purpose
+Simple weight-tracking app designed to be straight forward and easy to log your weight every day when trying to lose weight.
 
-## Getting Started
+## Features
+- Data storage in SQLite
+  Every entry and date will be saved in SQLite allowing you to accept this data whenever you want regardless of if the app has been closed.
+- Weekly weight average calculation (In progress)
+  View your weekly weight average to see if you are actually making progress! Weight varies day-by-day so the only true way to analyze progress is to observe your weekly average.
+- Chart view (In progress)
+  View your long-term progress in chart form and see how much you've progressed.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
