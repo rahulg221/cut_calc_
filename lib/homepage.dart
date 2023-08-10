@@ -170,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _logView() => Container(
-        height: MediaQuery.of(context).size.height * 0.5,
+        height: MediaQuery.of(context).size.height * 0.55,
         child: ListView.builder(
           itemCount: _logs.length,
           itemBuilder: (context, index) {
@@ -243,7 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
         elevation: 3.0, // Adjust the elevation value as needed
         borderRadius: BorderRadius.circular(15.0),
         child: Container(
-            height: MediaQuery.of(context).size.height * 0.39,
+            height: MediaQuery.of(context).size.height * 0.35,
             width: MediaQuery.of(context).size.width - 30,
             decoration: BoxDecoration(
               color: secondaryColor,
