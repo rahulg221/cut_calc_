@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:myjournal/sql_helper.dart';
 import 'package:intl/intl.dart';
@@ -23,6 +24,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String fontStyle = 'Arvo';
 
   double weeklyAvg = 0.0;
+
+  List<double> week = [0, 0, 0, 0, 0, 0, 0];
 
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
@@ -62,6 +65,14 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<void> _weeklyLog() async {
+    setState(() async {
+      for (int i = 0; i < 6; i++) {
+        week[0] = await SQLHelper.getWeight(i);
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -87,75 +98,79 @@ class _MyHomePageState extends State<MyHomePage> {
           elevation: 5,
           isScrollControlled: true,
           builder: (_) => Container(
-              color: secondaryColor,
-              padding: EdgeInsets.only(
-                top: 15,
-                left: 15,
-                right: 15,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  TextField(
-                    controller: _weightController,
-                    keyboardType:
-                        TextInputType.numberWithOptions(decimal: true),
-                    decoration: InputDecoration(
-                      hintText: 'Weight',
-                      hintStyle: TextStyle(fontFamily: fontStyle),
-                      contentPadding: EdgeInsets.symmetric(
-                          vertical: 15.0, horizontal: 20.0), // Adjust padding
-                      filled: true,
-                      fillColor: Colors.white, // Set the background color
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                color: secondaryColor,
+                padding: EdgeInsets.only(
+                  top: 15,
+                  left: 15,
+                  right: 15,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    TextField(
+                      controller: _weightController,
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
+                      decoration: InputDecoration(
+                        hintText: 'Weight',
+                        hintStyle: TextStyle(fontFamily: fontStyle),
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 15.0, horizontal: 20.0), // Adjust padding
+                        filled: true,
+                        fillColor: Colors.white, // Set the background color
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: _noteController,
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      hintText: 'Notes',
-                      hintStyle: TextStyle(fontFamily: fontStyle),
-                      contentPadding: EdgeInsets.symmetric(
-                          vertical: 15.0, horizontal: 20.0), // Adjust padding
-                      filled: true,
-                      fillColor: Colors.white, // Set the background color
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _noteController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        hintText: 'Notes',
+                        hintStyle: TextStyle(fontFamily: fontStyle),
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 15.0, horizontal: 20.0), // Adjust padding
+                        filled: true,
+                        fillColor: Colors.white, // Set the background color
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white),
-                    onPressed: () async {
-                      await _addLog();
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white),
+                      onPressed: () async {
+                        await _addLog();
 
-                      _calculateAvg();
+                        _calculateAvg();
 
-                      _weightController.clear();
-                      _noteController.clear();
+                        _weeklyLog();
 
-                      if (!mounted) return;
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Add',
-                        style: TextStyle(fontSize: 20, fontFamily: fontStyle)),
-                  )
-                ],
-              )));
+                        _weightController.clear();
+                        _noteController.clear();
+
+                        if (!mounted) return;
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Add',
+                          style:
+                              TextStyle(fontSize: 20, fontFamily: fontStyle)),
+                    )
+                  ],
+                ),
+              ));
     }
   }
 
   Widget _logView() => Container(
-        height: MediaQuery.of(context).size.height * 0.7,
+        height: MediaQuery.of(context).size.height * 0.4,
         child: ListView.builder(
           itemCount: _logs.length,
           itemBuilder: (context, index) {
@@ -165,7 +180,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 'currentDate']); // Assuming you're storing the date as a String
             final formattedDate =
                 DateFormat('MMM dd, yyyy').format(currentDate);
-
             return Card(
               elevation: 3.0,
               color: secondaryColor,
@@ -229,7 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
         elevation: 3.0, // Adjust the elevation value as needed
         borderRadius: BorderRadius.circular(15.0),
         child: Container(
-            height: MediaQuery.of(context).size.height * 0.15,
+            height: MediaQuery.of(context).size.height * 0.5,
             width: MediaQuery.of(context).size.width - 30,
             decoration: BoxDecoration(
               color: secondaryColor,
@@ -243,12 +257,32 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               child: Column(
                 children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    width: double.infinity,
+                    height: 300,
+                    child: LineChart(
+                      LineChartData(
+                          borderData: FlBorderData(show: false),
+                          lineBarsData: [
+                            LineChartBarData(spots: [
+                              FlSpot(1, week[0]),
+                              FlSpot(2, week[1]),
+                              FlSpot(3, week[2]),
+                              FlSpot(4, week[3]),
+                              FlSpot(5, week[4]),
+                              FlSpot(6, week[5]),
+                              FlSpot(7, week[6]),
+                            ])
+                          ]),
+                    ),
+                  ),
                   Text(
                     '${weeklyAvg.toStringAsFixed(1)} lbs',
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       color: Colors.black,
-                      fontSize: 40,
+                      fontSize: 30,
                       fontFamily: fontStyle,
                     ),
                   ),
@@ -257,7 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       color: Colors.black,
-                      fontSize: 20,
+                      fontSize: 15,
                       fontFamily: fontStyle,
                     ),
                   ),
@@ -268,6 +302,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: primaryColor,
       appBar: AppBar(
         backgroundColor: primaryColor,

@@ -41,6 +41,18 @@ class SQLHelper {
     return db.query('items', where: "id = ?", whereArgs: [id], limit: 1);
   }
 
+  static Future<double> getWeight(int id) async {
+    final db = await SQLHelper.db();
+    final result = await db.query('items',
+        columns: ['weight'], where: "id = ?", whereArgs: [id], limit: 1);
+
+    if (result.isNotEmpty) {
+      return result.first['weight'] as double;
+    }
+
+    return 0.0; // Default value if the result is empty
+  }
+
   static Future<List<Map<String, dynamic>>> getWeeklyLogs() async {
     final db = await SQLHelper.db();
     return db.query('items',
