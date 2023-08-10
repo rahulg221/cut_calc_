@@ -9,7 +9,7 @@ Simple weight-tracking app designed to be straight forward and easy to log your 
 
   
   Every entry and date will be saved in SQLite allowing you to access this data whenever you want regardless of if the app has been closed.
-- Weekly weight average calculation (In progress)
+- Weekly weight average calculation 
 
   
   View your weekly weight average to see if you are actually making progress! Weight varies day-by-day so the only true way to analyze progress is to observe your weekly average.
