@@ -8,7 +8,7 @@ Simple weight-tracking app designed to be straight forward and easy to log your 
 - Data storage in SQLite
 
   
-  Every entry and date will be saved in SQLite allowing you to accept this data whenever you want regardless of if the app has been closed.
+  Every entry and date will be saved in SQLite allowing you to access this data whenever you want regardless of if the app has been closed.
 - Weekly weight average calculation (In progress)
 
   
