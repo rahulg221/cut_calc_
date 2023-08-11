@@ -18,14 +18,18 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Map<String, dynamic>> _logs = [];
   bool _isLoading = true;
 
-  Color primaryColor = Color.fromARGB(255, 255, 111, 0);
-  Color secondaryColor = Color.fromARGB(255, 255, 125, 49);
+  //Color.fromARGB(255, 255, 111, 0);
+  Color primaryColor = Color.fromARGB(255, 0, 24, 44);
+
+  //Color.fromARGB(255, 255, 125, 49);
+  Color secondaryColor = Color.fromARGB(255, 15, 77, 128).withOpacity(0.8);
 
   String fontStyle = 'Arvo';
 
   double weeklyAvg = 0.0;
 
   List<double> week = [0, 0, 0, 0, 0, 0, 0];
+  List<FlSpot> dataPoints = [];
 
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
@@ -287,7 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                   Text(
-                    'weekly avg.',
+                    '7-day avg.',
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       color: Colors.black,
@@ -309,7 +313,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title,
             style: TextStyle(
                 fontWeight: FontWeight.w300,
-                color: Colors.black,
+                color: Colors.white,
                 fontSize: 30,
                 fontFamily: fontStyle)),
       ),
