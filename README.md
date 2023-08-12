@@ -1,4 +1,4 @@
-# Cut Calc
+# Weight Journal
 A simple weight-tracker.
 
 ## Purpose
