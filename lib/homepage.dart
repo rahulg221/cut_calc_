@@ -251,7 +251,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     children: [
                       notes != ''
                           ? IconButton(
-                              icon: const Icon(Icons.bookmark,
+                              icon: const Icon(Icons.receipt,
                                   color: Colors.black),
                               onPressed: () {
                                 showDialog(
@@ -299,7 +299,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                 );
                               })
                           : IconButton(
-                              icon: Icon(Icons.bookmark_border,
+                              icon: Icon(Icons.receipt_outlined,
                                   color: Colors.black),
                               onPressed: () {
                                 showDialog(
