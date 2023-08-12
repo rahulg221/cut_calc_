@@ -187,8 +187,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     const SizedBox(height: 10),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black),
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white),
                       onPressed: () async {
                         await _addLog();
 
@@ -486,7 +486,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showForm(null),
         tooltip: 'Add Log',
-        child: Icon(Icons.add, color: Colors.white),
+        child: Icon(Icons.edit, color: Colors.white),
         backgroundColor: Colors.black,
         shape: RoundedRectangleBorder(
           borderRadius:
