@@ -18,6 +18,8 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Map<String, dynamic>> _logs = [];
   bool _isLoading = true;
 
+  double maxY = 300;
+
   //Color.fromARGB(255, 255, 111, 0);
   Color primaryColor = Color.fromARGB(255, 0, 24, 44);
 
@@ -53,6 +55,16 @@ class _MyHomePageState extends State<MyHomePage> {
     String notes = _noteController.text;
     List<FlSpot> dataPts = [];
     await SQLHelper.addLog(weight, notes);
+
+    setState(() {
+      if (weight < 100) {
+        maxY = 100;
+      } else if (weight < 200) {
+        maxY = 200;
+      } else if (weight < 300) {
+        maxY = 300;
+      }
+    });
 
     _refreshLogs();
   }
@@ -275,7 +287,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 200,
                     child: LineChart(
                       LineChartData(
+                          minX: 1,
+                          maxX: 7,
+                          minY: 0,
+                          maxY: maxY,
                           borderData: FlBorderData(show: false),
+                          titlesData: FlTitlesData(
+                            rightTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false)),
+                            topTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false)),
+                          ),
+                          gridData: FlGridData(show: false),
                           lineBarsData: [
                             LineChartBarData(
                               spots: dataPoints,

@@ -60,14 +60,21 @@ class SQLHelper {
         orderBy: "id DESC", limit: 7); // Fetch the last 7 entries
   }
 
+  static Future<List<Map<String, dynamic>>> getWeeklyChart() async {
+    final db = await SQLHelper.db();
+    return db.query('items',
+        orderBy: "id ASC", limit: 7); // Fetch the last 7 entries
+  }
+
   static Future<List<FlSpot>> getData() async {
     List<FlSpot> dataPts = [];
+
     int index = 0;
-    double spotIndex = 6;
-    final logs = await getWeeklyLogs();
+    double spotIndex = 8;
+    final logs = await getWeeklyChart();
 
     for (var log in logs) {
-      dataPts.insert(index, FlSpot(spotIndex, log['weight']));
+      dataPts.insert(index, FlSpot(index + 1, log['weight']));
       index++;
       spotIndex--;
     }
@@ -104,5 +111,3 @@ class SQLHelper {
 //weight: logged weight
 //notes: additional notes
 //currentDate: date logged on
-
-
