@@ -225,80 +225,133 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               color: secondaryColor,
               margin:
                   const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 12.0),
-              child: GestureDetector(
-                onTap: () {
-                  if (notes != '') {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text(
-                            'Notes',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontFamily: fontStyle,
-                            ),
-                          ),
-                          content: Text(
-                            notes,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontFamily: fontStyle,
-                            ),
-                          ),
-                          backgroundColor: secondaryColor,
-                          actions: <Widget>[
-                            TextButton(
+              child: ListTile(
+                title: Text(
+                  weight.toString() + ' lbs',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontFamily: fontStyle,
+                  ),
+                ),
+                subtitle: Text(
+                  formattedDate,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontFamily: fontStyle,
+                  ),
+                ),
+                trailing: SizedBox(
+                  width: 120,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      notes != ''
+                          ? IconButton(
+                              icon: const Icon(Icons.bookmark,
+                                  color: Colors.black),
                               onPressed: () {
-                                Navigator.of(context)
-                                    .pop(); // Close the AlertDialog
-                              },
-                              child: Text(
-                                'Close',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontFamily: fontStyle,
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  }
-                },
-                child: ListTile(
-                  title: Text(
-                    weight.toString() + ' lbs',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontFamily: fontStyle,
-                    ),
-                  ),
-                  subtitle: Text(
-                    formattedDate,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontFamily: fontStyle,
-                    ),
-                  ),
-                  trailing: SizedBox(
-                    width: 30,
-                    child: IconButton(
-                        icon: const Icon(Icons.clear, color: Colors.black),
-                        onPressed: () {
-                          _deleteLog(_logs[index]['id']);
-                        }),
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text(
+                                        'Notes',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                          fontFamily: fontStyle,
+                                        ),
+                                      ),
+                                      content: Text(
+                                        notes,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black,
+                                          fontSize: 18,
+                                          fontFamily: fontStyle,
+                                        ),
+                                      ),
+                                      backgroundColor: secondaryColor,
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .pop(); // Close the AlertDialog
+                                          },
+                                          child: Text(
+                                            'Close',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                              fontSize: 16,
+                                              fontFamily: fontStyle,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              })
+                          : IconButton(
+                              icon: Icon(Icons.bookmark_border,
+                                  color: Colors.black),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text(
+                                        'Uh Oh!',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                          fontFamily: fontStyle,
+                                        ),
+                                      ),
+                                      content: Text(
+                                        'No notes found for this entry.',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black,
+                                          fontSize: 18,
+                                          fontFamily: fontStyle,
+                                        ),
+                                      ),
+                                      backgroundColor: secondaryColor,
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .pop(); // Close the AlertDialog
+                                          },
+                                          child: Text(
+                                            'Close',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                              fontSize: 16,
+                                              fontFamily: fontStyle,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }),
+                      IconButton(
+                          icon: const Icon(Icons.clear, color: Colors.black),
+                          onPressed: () {
+                            _deleteLog(_logs[index]['id']);
+                          }),
+                    ],
                   ),
                 ),
               ),
