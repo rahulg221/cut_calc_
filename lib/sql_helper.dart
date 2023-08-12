@@ -22,6 +22,11 @@ class SQLHelper {
     );
   }
 
+  static Future<void> closeDatabase() async {
+    final db = await SQLHelper.db();
+    await db.close();
+  }
+
   static Future<int> addLog(double weight, String notes) async {
     final db = await SQLHelper.db();
 
@@ -36,15 +41,25 @@ class SQLHelper {
     return db.query('items', orderBy: "id");
   }
 
+  static Future<List<Map<String, dynamic>>> getLog(int id) async {
+    final db = await SQLHelper.db();
+
+    return db.query('items', where: "id = ?", whereArgs: [id], limit: 1);
+  }
+
   static Future<void> deleteAllLogs() async {
     final db = await SQLHelper.db();
     await db.delete('items'); // Delete all records from the 'items' table
   }
 
-  static Future<List<Map<String, dynamic>>> getLog(int id) async {
+  static Future<void> deleteLog(int id) async {
     final db = await SQLHelper.db();
 
-    return db.query('items', where: "id = ?", whereArgs: [id], limit: 1);
+    try {
+      await db.delete("items", where: "id = ?", whereArgs: [id]);
+    } catch (err) {
+      debugPrint("Error");
+    }
   }
 
   static Future<double> getWeight(int id) async {
@@ -99,16 +114,21 @@ class SQLHelper {
     return totalWeight / logs.length;
   }
 
-  static Future<void> deleteLog(int id) async {
+  static Future<int> getHighestId() async {
     final db = await SQLHelper.db();
+    final result =
+        await db.rawQuery('SELECT id FROM items ORDER BY id DESC LIMIT 1');
 
-    try {
-      await db.delete("items", where: "id = ?", whereArgs: [id]);
-    } catch (err) {
-      debugPrint("Error");
+    if (result.isNotEmpty) {
+      final highestId = result.first['id'] as int;
+      return highestId;
+    } else {
+      return 0; // Return null if no entries are found
     }
   }
 }
+
+
 
 //id: id of entry
 //weight: logged weight

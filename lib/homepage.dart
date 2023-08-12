@@ -2,7 +2,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:myjournal/sql_helper.dart';
 import 'package:intl/intl.dart';
-import 'package:myjournal/stats.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -13,20 +12,20 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   //Logs
   List<Map<String, dynamic>> _logs = [];
   bool _isLoading = true;
 
   double maxY = 300;
   double minY = 0;
-  double maxX = 7;
-  double minX = 1;
+  double maxX = 2;
+  double minX = 0;
   //Color.fromARGB(255, 255, 111, 0);
-  Color primaryColor = Color.fromARGB(255, 0, 23, 43);
+  Color primaryColor = Colors.white;
 
   //Color.fromARGB(255, 255, 125, 49);
-  Color secondaryColor = Color.fromARGB(255, 15, 77, 128);
+  Color secondaryColor = Color.fromARGB(255, 36, 185, 253);
 
   String fontStyle = 'Arvo';
 
@@ -56,10 +55,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _addLog() async {
     double weight = double.tryParse(_weightController.text) ?? 0.0;
     String notes = _noteController.text;
-    List<FlSpot> dataPts = [];
     await SQLHelper.addLog(weight, notes);
 
     maxX++;
+
     _refreshLogs();
   }
 
@@ -91,18 +90,42 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<void> _setMaxX() async {
+    final highestId = await SQLHelper.getHighestId();
+    print(highestId);
+    if (highestId != 0) {
+      setState(() {
+        maxX = highestId.toDouble() + 1;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _refreshLogs(); // Load in all logs
-    _calculateAvg();
+    _setMaxX();
+
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     _noteController.dispose();
     _weightController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    SQLHelper.closeDatabase(); // Call closeDatabase when disposing of the page
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused) {
+      print('Paused');
+      SQLHelper
+          .closeDatabase(); // Call closeDatabase when the app goes inactive or paused
+    }
   }
 
   void _showForm(int? id) async {
@@ -212,7 +235,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             'Notes',
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
-                              color: primaryColor,
+                              color: Colors.black,
                               fontSize: 20,
                               fontFamily: fontStyle,
                             ),
@@ -221,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             notes,
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
-                              color: primaryColor,
+                              color: Colors.black,
                               fontSize: 18,
                               fontFamily: fontStyle,
                             ),
@@ -237,7 +260,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 'Close',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
-                                  color: primaryColor,
+                                  color: Colors.black,
                                   fontSize: 16,
                                   fontFamily: fontStyle,
                                 ),
@@ -312,16 +335,20 @@ class _MyHomePageState extends State<MyHomePage> {
                           maxY: maxY,
                           borderData: FlBorderData(show: false),
                           titlesData: FlTitlesData(
-                              rightTitles: AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false)),
-                              topTitles: AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false)),
-                              bottomTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: false),
-                              )),
+                            rightTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                              showTitles: false,
+                            )),
+                            topTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false)),
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                          ),
                           gridData: FlGridData(show: false),
                           lineBarsData: [
                             LineChartBarData(
+                              color: Colors.black,
                               spots: dataPoints,
                             )
                           ]),
@@ -359,7 +386,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title,
             style: TextStyle(
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: Colors.black,
                 fontSize: 25,
                 fontFamily: fontStyle)),
         actions: [
@@ -373,7 +400,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       'Warning',
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
-                        color: primaryColor,
+                        color: Colors.black,
                         fontSize: 20,
                         fontFamily: fontStyle,
                       ),
@@ -382,7 +409,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       'Are you sure you want to delete all your entries?',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
-                        color: primaryColor,
+                        color: Colors.black,
                         fontSize: 18,
                         fontFamily: fontStyle,
                       ),
@@ -402,7 +429,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               'Yes',
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
-                                color: primaryColor,
+                                color: Colors.black,
                                 fontSize: 16,
                                 fontFamily: fontStyle,
                               ),
@@ -417,7 +444,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               'No',
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
-                                color: primaryColor,
+                                color: Colors.black,
                                 fontSize: 16,
                                 fontFamily: fontStyle,
                               ),
@@ -430,7 +457,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               );
             },
-            icon: Icon(Icons.delete_outline, size: 28, color: Colors.white),
+            icon: Icon(Icons.delete_outline, size: 28, color: Colors.black),
           ),
         ],
       ),
@@ -447,7 +474,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Text('Entries',
                         style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            color: Colors.white,
+                            color: Colors.black,
                             fontSize: 25,
                             fontFamily: fontStyle)),
                   ),
@@ -458,8 +485,8 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showForm(null),
         tooltip: 'Add Log',
-        child: const Icon(Icons.add, color: Colors.black),
-        backgroundColor: Colors.white,
+        child: Icon(Icons.add, color: Colors.white),
+        backgroundColor: Colors.black,
         shape: RoundedRectangleBorder(
           borderRadius:
               BorderRadius.circular(30.0), // Adjust the value for roundness

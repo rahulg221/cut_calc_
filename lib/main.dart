@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myjournal/sql_helper.dart';
-import 'package:intl/intl.dart';
-import 'package:myjournal/stats.dart';
 import 'package:myjournal/homepage.dart';
 
 void main() {
