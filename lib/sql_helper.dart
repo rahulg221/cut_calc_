@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 
@@ -57,6 +58,21 @@ class SQLHelper {
     final db = await SQLHelper.db();
     return db.query('items',
         orderBy: "id DESC", limit: 7); // Fetch the last 7 entries
+  }
+
+  static Future<List<FlSpot>> getData() async {
+    List<FlSpot> dataPts = [];
+    int index = 0;
+    double spotIndex = 6;
+    final logs = await getWeeklyLogs();
+
+    for (var log in logs) {
+      dataPts.insert(index, FlSpot(spotIndex, log['weight']));
+      index++;
+      spotIndex--;
+    }
+
+    return dataPts;
   }
 
   static Future<double> calculateAverageWeight() async {

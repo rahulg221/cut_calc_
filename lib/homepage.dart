@@ -34,19 +34,26 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
 
+  int index = 0;
   //Fetches data from database
   void _refreshLogs() async {
     final data = await SQLHelper.getLogs();
+    List<FlSpot> dataPts = [];
+    dataPts = await SQLHelper.getData();
+
     setState(() {
       _logs = data;
       _isLoading = false;
+      dataPoints = dataPts;
     });
   }
 
   Future<void> _addLog() async {
     double weight = double.tryParse(_weightController.text) ?? 0.0;
     String notes = _noteController.text;
+    List<FlSpot> dataPts = [];
     await SQLHelper.addLog(weight, notes);
+
     _refreshLogs();
   }
 
@@ -81,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _refreshLogs(); // Load in all logs
+    _calculateAvg();
   }
 
   @override
@@ -102,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
           elevation: 5,
           isScrollControlled: true,
           builder: (_) => Container(
-                color: secondaryColor,
+                color: primaryColor,
                 padding: EdgeInsets.only(
                   top: 15,
                   left: 15,
@@ -269,15 +277,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       LineChartData(
                           borderData: FlBorderData(show: false),
                           lineBarsData: [
-                            LineChartBarData(spots: [
-                              FlSpot(1, week[0]),
-                              FlSpot(2, week[1]),
-                              FlSpot(3, week[2]),
-                              FlSpot(4, week[3]),
-                              FlSpot(5, week[4]),
-                              FlSpot(6, week[5]),
-                              FlSpot(7, week[6]),
-                            ])
+                            LineChartBarData(
+                              spots: dataPoints,
+                            )
                           ]),
                     ),
                   ),
@@ -329,7 +331,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () => _showForm(null),
         tooltip: 'Add Log',
         child: const Icon(Icons.add, color: Colors.white),
-        backgroundColor: Colors.black,
+        backgroundColor: secondaryColor,
         shape: RoundedRectangleBorder(
           borderRadius:
               BorderRadius.circular(30.0), // Adjust the value for roundness
