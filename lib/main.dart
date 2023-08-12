@@ -14,11 +14,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'CutCalc',
+      title: 'My Weight Loss Journal',
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'CutCalc'),
+      home: const MyHomePage(title: 'Weight Journal'),
     );
   }
 }

@@ -36,6 +36,11 @@ class SQLHelper {
     return db.query('items', orderBy: "id");
   }
 
+  static Future<void> deleteAllLogs() async {
+    final db = await SQLHelper.db();
+    await db.delete('items'); // Delete all records from the 'items' table
+  }
+
   static Future<List<Map<String, dynamic>>> getLog(int id) async {
     final db = await SQLHelper.db();
 
@@ -60,23 +65,21 @@ class SQLHelper {
         orderBy: "id DESC", limit: 7); // Fetch the last 7 entries
   }
 
-  static Future<List<Map<String, dynamic>>> getWeeklyChart() async {
+  static Future<List<Map<String, dynamic>>> getChart() async {
     final db = await SQLHelper.db();
-    return db.query('items',
-        orderBy: "id ASC", limit: 7); // Fetch the last 7 entries
+    return db.query('items', orderBy: "id ASC"); // Fetch the last 7 entries
   }
 
   static Future<List<FlSpot>> getData() async {
     List<FlSpot> dataPts = [];
 
     int index = 0;
-    double spotIndex = 8;
-    final logs = await getWeeklyChart();
+
+    final logs = await getChart();
 
     for (var log in logs) {
       dataPts.insert(index, FlSpot(index + 1, log['weight']));
       index++;
-      spotIndex--;
     }
 
     return dataPts;

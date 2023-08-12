@@ -19,18 +19,19 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isLoading = true;
 
   double maxY = 300;
-
+  double minY = 0;
+  double maxX = 7;
+  double minX = 1;
   //Color.fromARGB(255, 255, 111, 0);
-  Color primaryColor = Color.fromARGB(255, 0, 24, 44);
+  Color primaryColor = Color.fromARGB(255, 0, 23, 43);
 
   //Color.fromARGB(255, 255, 125, 49);
-  Color secondaryColor = Color.fromARGB(255, 15, 77, 128).withOpacity(0.8);
+  Color secondaryColor = Color.fromARGB(255, 15, 77, 128);
 
   String fontStyle = 'Arvo';
 
   double weeklyAvg = 0.0;
 
-  List<double> week = [0, 0, 0, 0, 0, 0, 0];
   List<FlSpot> dataPoints = [];
 
   final TextEditingController _weightController = TextEditingController();
@@ -47,6 +48,8 @@ class _MyHomePageState extends State<MyHomePage> {
       _logs = data;
       _isLoading = false;
       dataPoints = dataPts;
+
+      _calculateAvg();
     });
   }
 
@@ -56,16 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
     List<FlSpot> dataPts = [];
     await SQLHelper.addLog(weight, notes);
 
-    setState(() {
-      if (weight < 100) {
-        maxY = 100;
-      } else if (weight < 200) {
-        maxY = 200;
-      } else if (weight < 300) {
-        maxY = 300;
-      }
-    });
-
+    maxX++;
     _refreshLogs();
   }
 
@@ -77,6 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 fontFamily: fontStyle, color: Colors.black, fontSize: 18)),
         backgroundColor: secondaryColor));
 
+    maxX--;
     _refreshLogs();
   }
 
@@ -85,13 +80,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       weeklyAvg = avg;
-    });
-  }
 
-  Future<void> _weeklyLog() async {
-    setState(() async {
-      for (int i = 0; i < 6; i++) {
-        week[0] = await SQLHelper.getWeight(i);
+      if (weeklyAvg > 0) {
+        maxY = ((weeklyAvg + 10) / 10).ceil() * 10;
+        minY = ((weeklyAvg - 10) / 10).floor() * 10;
+      } else if (weeklyAvg == 0) {
+        maxY = 300;
+        minY = 0;
       }
     });
   }
@@ -122,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
           elevation: 5,
           isScrollControlled: true,
           builder: (_) => Container(
-                color: primaryColor,
+                color: secondaryColor,
                 padding: EdgeInsets.only(
                   top: 15,
                   left: 15,
@@ -168,14 +163,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     const SizedBox(height: 10),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white),
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black),
                       onPressed: () async {
                         await _addLog();
 
                         _calculateAvg();
-
-                        _weeklyLog();
 
                         _weightController.clear();
                         _noteController.clear();
@@ -185,7 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                       child: Text('Add',
                           style:
-                              TextStyle(fontSize: 20, fontFamily: fontStyle)),
+                              TextStyle(fontSize: 16, fontFamily: fontStyle)),
                     )
                   ],
                 ),
@@ -194,7 +187,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _logView() => Container(
-        height: MediaQuery.of(context).size.height * 0.55,
         child: ListView.builder(
           itemCount: _logs.length,
           itemBuilder: (context, index) {
@@ -207,23 +199,53 @@ class _MyHomePageState extends State<MyHomePage> {
             return Card(
               elevation: 3.0,
               color: secondaryColor,
-              margin: const EdgeInsets.all(15),
+              margin:
+                  const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 12.0),
               child: GestureDetector(
                 onTap: () {
                   if (notes != '') {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          notes,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontFamily: fontStyle,
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(
+                            'Notes',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: primaryColor,
+                              fontSize: 20,
+                              fontFamily: fontStyle,
+                            ),
                           ),
-                        ),
-                        backgroundColor: secondaryColor,
-                      ),
+                          content: Text(
+                            notes,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: primaryColor,
+                              fontSize: 18,
+                              fontFamily: fontStyle,
+                            ),
+                          ),
+                          backgroundColor: secondaryColor,
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context)
+                                    .pop(); // Close the AlertDialog
+                              },
+                              child: Text(
+                                'Close',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: primaryColor,
+                                  fontSize: 16,
+                                  fontFamily: fontStyle,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     );
                   }
                 },
@@ -252,8 +274,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         icon: const Icon(Icons.clear, color: Colors.black),
                         onPressed: () {
                           _deleteLog(_logs[index]['id']);
-
-                          _calculateAvg();
                         }),
                   ),
                 ),
@@ -270,14 +290,14 @@ class _MyHomePageState extends State<MyHomePage> {
             height: MediaQuery.of(context).size.height * 0.35,
             width: MediaQuery.of(context).size.width - 30,
             decoration: BoxDecoration(
-              color: secondaryColor,
+              color: secondaryColor.withOpacity(0.6),
               borderRadius:
                   BorderRadius.circular(15.0), // Adjust the radius as needed
             ),
             child: Center(
                 child: Padding(
               padding: EdgeInsets.only(
-                top: MediaQuery.of(context).size.height * 0.01,
+                top: MediaQuery.of(context).size.height * 0.008,
               ),
               child: Column(
                 children: [
@@ -287,17 +307,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 200,
                     child: LineChart(
                       LineChartData(
-                          minX: 1,
-                          maxX: 7,
-                          minY: 0,
+                          maxX: maxX,
+                          minY: minY,
                           maxY: maxY,
                           borderData: FlBorderData(show: false),
                           titlesData: FlTitlesData(
-                            rightTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: false)),
-                            topTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: false)),
-                          ),
+                              rightTitles: AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false)),
+                              topTitles: AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false)),
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              )),
                           gridData: FlGridData(show: false),
                           lineBarsData: [
                             LineChartBarData(
@@ -311,7 +332,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       color: Colors.black,
-                      fontSize: 30,
+                      fontSize: 35,
                       fontFamily: fontStyle,
                     ),
                   ),
@@ -320,7 +341,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       color: Colors.black,
-                      fontSize: 15,
+                      fontSize: 13,
                       fontFamily: fontStyle,
                     ),
                   ),
@@ -337,24 +358,108 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: primaryColor,
         title: Text(widget.title,
             style: TextStyle(
-                fontWeight: FontWeight.w300,
+                fontWeight: FontWeight.w700,
                 color: Colors.white,
-                fontSize: 30,
+                fontSize: 25,
                 fontFamily: fontStyle)),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text(
+                      'Warning',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: primaryColor,
+                        fontSize: 20,
+                        fontFamily: fontStyle,
+                      ),
+                    ),
+                    content: Text(
+                      'Are you sure you want to delete all your entries?',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: primaryColor,
+                        fontSize: 18,
+                        fontFamily: fontStyle,
+                      ),
+                    ),
+                    backgroundColor: secondaryColor,
+                    actions: <Widget>[
+                      Row(
+                        children: [
+                          TextButton(
+                            onPressed: () async {
+                              await SQLHelper.deleteAllLogs();
+                              _refreshLogs();
+                              Navigator.of(context)
+                                  .pop(); // Close the AlertDialog
+                            },
+                            child: Text(
+                              'Yes',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: primaryColor,
+                                fontSize: 16,
+                                fontFamily: fontStyle,
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pop(); // Close the AlertDialog
+                            },
+                            child: Text(
+                              'No',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: primaryColor,
+                                fontSize: 16,
+                                fontFamily: fontStyle,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            icon: Icon(Icons.delete_outline, size: 28, color: Colors.white),
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
                 _dashboard(),
-                _logView(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 12),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Text('Entries',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                            fontSize: 25,
+                            fontFamily: fontStyle)),
+                  ),
+                ),
+                Expanded(child: _logView()),
               ],
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showForm(null),
         tooltip: 'Add Log',
-        child: const Icon(Icons.add, color: Colors.white),
-        backgroundColor: secondaryColor,
+        child: const Icon(Icons.add, color: Colors.black),
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius:
               BorderRadius.circular(30.0), // Adjust the value for roundness
