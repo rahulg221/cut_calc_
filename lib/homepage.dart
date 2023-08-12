@@ -19,8 +19,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   double maxY = 300;
   double minY = 0;
-  double maxX = 2;
-  double minX = 0;
+  double max_X = 2;
+  double min_X = 0;
   //Color.fromARGB(255, 255, 111, 0);
   Color primaryColor = Colors.white;
 
@@ -42,11 +42,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     final data = await SQLHelper.getLogs();
     List<FlSpot> dataPts = [];
     dataPts = await SQLHelper.getData();
+    double count = await SQLHelper.getRecordCount();
 
     setState(() {
       _logs = data;
       _isLoading = false;
       dataPoints = dataPts;
+      max_X = count + 1;
 
       _calculateAvg();
     });
@@ -56,8 +58,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     double weight = double.tryParse(_weightController.text) ?? 0.0;
     String notes = _noteController.text;
     await SQLHelper.addLog(weight, notes);
-
-    maxX++;
+    print('max x: $max_X');
 
     _refreshLogs();
   }
@@ -70,7 +71,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 fontFamily: fontStyle, color: Colors.black, fontSize: 18)),
         backgroundColor: secondaryColor));
 
-    maxX--;
     _refreshLogs();
   }
 
@@ -91,20 +91,21 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   Future<void> _setMaxX() async {
-    final highestId = await SQLHelper.getHighestId();
-    print(highestId);
-    if (highestId != 0) {
+    final count = await SQLHelper.getRecordCount;
+    print('count: $count');
+    /* if (count != 0) {
       setState(() {
-        maxX = highestId.toDouble() + 1;
+        //maxX = count as double;
+        maxX++;
       });
-    }
+    }*/
   }
 
   @override
   void initState() {
     super.initState();
     _refreshLogs(); // Load in all logs
-    _setMaxX();
+    //_setMaxX();
 
     WidgetsBinding.instance.addObserver(this);
   }
@@ -278,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       color: Colors.black,
-                      fontSize: 25,
+                      fontSize: 18,
                       fontFamily: fontStyle,
                     ),
                   ),
@@ -287,7 +288,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       color: Colors.black,
-                      fontSize: 18,
+                      fontSize: 14,
                       fontFamily: fontStyle,
                     ),
                   ),
@@ -330,7 +331,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     height: 200,
                     child: LineChart(
                       LineChartData(
-                          maxX: maxX,
+                          maxX: max_X,
                           minY: minY,
                           maxY: maxY,
                           borderData: FlBorderData(show: false),

@@ -49,7 +49,9 @@ class SQLHelper {
 
   static Future<void> deleteAllLogs() async {
     final db = await SQLHelper.db();
-    await db.delete('items'); // Delete all records from the 'items' table
+    final rowsDeleted =
+        await db.delete('items'); // Delete all records from the 'items' table
+    print("Deleted $rowsDeleted rows.");
   }
 
   static Future<void> deleteLog(int id) async {
@@ -125,6 +127,14 @@ class SQLHelper {
     } else {
       return 0; // Return null if no entries are found
     }
+  }
+
+  static Future<double> getRecordCount() async {
+    final db = await sql.openDatabase('weightTracker.db');
+    final result = await db.rawQuery('SELECT COUNT(*) FROM items');
+    final count = result.first.values.first as int;
+    print('count from sql: $count');
+    return count.toDouble() ?? 0.0;
   }
 }
 
