@@ -13,7 +13,7 @@ Simple weight-tracking app designed to be straight forward and easy to log your 
 
   
   View your weekly weight average to see if you are actually making progress! Weight varies day-by-day so the only true way to analyze progress is to observe your weekly average.
-- Chart view (In progress)
+- Chart view 
 
   
   View your long-term progress in chart form and see how much you've progressed.
