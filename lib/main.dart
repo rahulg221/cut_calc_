@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Weight Journal'),
+      home: const MyHomePage(title: 'My Journal'),
     );
   }
 }

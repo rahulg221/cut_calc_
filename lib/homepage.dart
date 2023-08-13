@@ -22,10 +22,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   double max_X = 2;
   double min_X = 0;
   //Color.fromARGB(255, 255, 111, 0);
-  Color primaryColor = Colors.white;
+  Color primaryColor = Colors.white.withOpacity(0.7);
 
   //Color.fromARGB(255, 255, 125, 49);
-  Color secondaryColor = Color.fromARGB(255, 36, 185, 253);
+  Color secondaryColor = Colors.white.withOpacity(0.7);
 
   String fontStyle = 'Arvo';
 
@@ -360,192 +360,189 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         ),
       );
 
-  Widget _dashboard() => Material(
-        elevation: 3.0, // Adjust the elevation value as needed
-        borderRadius: BorderRadius.circular(15.0),
-        child: Container(
-            height: MediaQuery.of(context).size.height * 0.35,
-            width: MediaQuery.of(context).size.width - 30,
-            decoration: BoxDecoration(
-              color: secondaryColor.withOpacity(0.6),
-              borderRadius:
-                  BorderRadius.circular(15.0), // Adjust the radius as needed
+  Widget _dashboard() => Container(
+      height: MediaQuery.of(context).size.height * 0.35,
+      width: MediaQuery.of(context).size.width - 30,
+      decoration: BoxDecoration(
+        color: secondaryColor,
+        borderRadius:
+            BorderRadius.circular(15.0), // Adjust the radius as needed
+      ),
+      child: Center(
+          child: Padding(
+        padding: EdgeInsets.only(
+          top: MediaQuery.of(context).size.height * 0.008,
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              width: double.infinity,
+              height: 200,
+              child: LineChart(
+                LineChartData(
+                    maxX: max_X,
+                    minY: minY,
+                    maxY: maxY,
+                    borderData: FlBorderData(show: false),
+                    titlesData: FlTitlesData(
+                      rightTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                        showTitles: false,
+                      )),
+                      topTitles:
+                          AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                    ),
+                    gridData: FlGridData(show: false),
+                    lineBarsData: [
+                      LineChartBarData(
+                        color: Colors.black,
+                        spots: dataPoints,
+                      )
+                    ]),
+              ),
             ),
-            child: Center(
-                child: Padding(
-              padding: EdgeInsets.only(
-                top: MediaQuery.of(context).size.height * 0.008,
+            Text(
+              '${weeklyAvg.toStringAsFixed(1)} lbs',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+                fontSize: 35,
+                fontFamily: fontStyle,
               ),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    width: double.infinity,
-                    height: 200,
-                    child: LineChart(
-                      LineChartData(
-                          maxX: max_X,
-                          minY: minY,
-                          maxY: maxY,
-                          borderData: FlBorderData(show: false),
-                          titlesData: FlTitlesData(
-                            rightTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                              showTitles: false,
-                            )),
-                            topTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: false)),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                          ),
-                          gridData: FlGridData(show: false),
-                          lineBarsData: [
-                            LineChartBarData(
-                              color: Colors.black,
-                              spots: dataPoints,
-                            )
-                          ]),
-                    ),
-                  ),
-                  Text(
-                    '${weeklyAvg.toStringAsFixed(1)} lbs',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
-                      fontSize: 35,
-                      fontFamily: fontStyle,
-                    ),
-                  ),
-                  Text(
-                    '7-day avg.',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
-                      fontSize: 13,
-                      fontFamily: fontStyle,
-                    ),
-                  ),
-                ],
+            ),
+            Text(
+              '7-day avg.',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+                fontSize: 13,
+                fontFamily: fontStyle,
               ),
-            ))),
-      );
+            ),
+          ],
+        ),
+      )));
 
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: primaryColor,
-      appBar: AppBar(
-        backgroundColor: primaryColor,
-        title: Text(widget.title,
-            style: TextStyle(
-                fontWeight: FontWeight.w700,
-                color: Colors.black,
-                fontSize: 25,
-                fontFamily: fontStyle)),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text(
-                      'Warning',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontFamily: fontStyle,
-                      ),
-                    ),
-                    content: Text(
-                      'Are you sure you want to delete all your entries?',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontFamily: fontStyle,
-                      ),
-                    ),
-                    backgroundColor: secondaryColor,
-                    actions: <Widget>[
-                      Row(
-                        children: [
-                          TextButton(
-                            onPressed: () async {
-                              await SQLHelper.deleteAllLogs();
-                              _refreshLogs();
-                              Navigator.of(context)
-                                  .pop(); // Close the AlertDialog
-                            },
-                            child: Text(
-                              'Yes',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontFamily: fontStyle,
-                              ),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pop(); // Close the AlertDialog
-                            },
-                            child: Text(
-                              'No',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontFamily: fontStyle,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            icon: Icon(Icons.delete_outline, size: 28, color: Colors.black),
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(
+                  "assets/images/wp8913058.png"), // <-- BACKGROUND IMAGE
+              fit: BoxFit.cover,
+            ),
           ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                _dashboard(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 12),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Text('Entries',
-                        style: TextStyle(
+        ),
+        Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: primaryColor,
+            title: Text(widget.title,
+                style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black,
+                    fontSize: 25,
+                    fontFamily: fontStyle)),
+            actions: [
+              IconButton(
+                onPressed: () async {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(
+                          'Warning',
+                          style: TextStyle(
                             fontWeight: FontWeight.w700,
                             color: Colors.black,
-                            fontSize: 25,
-                            fontFamily: fontStyle)),
-                  ),
+                            fontSize: 20,
+                            fontFamily: fontStyle,
+                          ),
+                        ),
+                        content: Text(
+                          'Are you sure you want to delete all your entries?',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontFamily: fontStyle,
+                          ),
+                        ),
+                        backgroundColor: secondaryColor,
+                        actions: <Widget>[
+                          Row(
+                            children: [
+                              TextButton(
+                                onPressed: () async {
+                                  await SQLHelper.deleteAllLogs();
+                                  _refreshLogs();
+                                  Navigator.of(context)
+                                      .pop(); // Close the AlertDialog
+                                },
+                                child: Text(
+                                  'Yes',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontFamily: fontStyle,
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pop(); // Close the AlertDialog
+                                },
+                                child: Text(
+                                  'No',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontFamily: fontStyle,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                icon: Icon(Icons.delete_outline, size: 28, color: Colors.black),
+              ),
+            ],
+          ),
+          body: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
+                  children: [
+                    _dashboard(),
+                    SizedBox(height: 12),
+                    Expanded(child: _logView()),
+                  ],
                 ),
-                Expanded(child: _logView()),
-              ],
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => _showForm(null),
+            tooltip: 'Add Log',
+            child: Icon(Icons.edit, color: Colors.white),
+            backgroundColor: Colors.black,
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(30.0), // Adjust the value for roundness
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showForm(null),
-        tooltip: 'Add Log',
-        child: Icon(Icons.edit, color: Colors.white),
-        backgroundColor: Colors.black,
-        shape: RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.circular(30.0), // Adjust the value for roundness
+          ),
         ),
-      ),
+      ],
     );
   }
 }
