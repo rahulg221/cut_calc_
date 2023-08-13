@@ -141,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           elevation: 5,
           isScrollControlled: true,
           builder: (_) => Container(
-                color: secondaryColor,
+                color: Colors.white,
                 padding: EdgeInsets.only(
                   top: 15,
                   left: 15,
